@@ -107,8 +107,9 @@ class FDADataLoader:
             'report_number': record.get('report_number'),
             'date_created': record.get('date_created'),
             'date_started': record.get('date_started'),
-            'outcomes': ','.join(record.get('outcomes', [])),
-            'reactions': ','.join(record.get('reactions', [])),
+            # Keep as lists instead of joining - this is the fix!
+            'outcomes': record.get('outcomes', []),
+            'reactions': record.get('reactions', []),
             'reaction_count': len(record.get('reactions', [])),
         }
         
@@ -126,6 +127,14 @@ class FDADataLoader:
             flat['product_role'] = product.get('role')
             flat['industry_code'] = product.get('industry_code')
             flat['industry_name'] = product.get('industry_name')
+        else:
+            flat['product_name'] = None
+            flat['product_role'] = None
+            flat['industry_code'] = None
+            flat['industry_name'] = None
+        
+        # Store all products as list for more detailed analysis if needed
+        flat['products'] = [p.get('name_brand') for p in products if p.get('name_brand')]
         
         return flat
     
